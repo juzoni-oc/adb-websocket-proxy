@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  adb-proxy:
+    build: .
+    image: juzoni-oc/adb-websocket-proxy:latest
+    container_name: adb-websocket-proxy
+    ports:
+      - "8765:8765"        # WebSocket + HTTP API
+    environment:
+      ADB_HOST: ${ADB_HOST:-host.docker.internal}
+      ADB_PORT: ${ADB_PORT:-5037}
+      WS_PORT: 8765
+      # Open mode by default; set ADB_PROXY_SECRET to enable HMAC auth.
+      ADB_PROXY_SECRET: ${ADB_PROXY_SECRET:-}
+      ADB_PROXY_TOKENS: ${ADB_PROXY_TOKENS:-}
+    # Reach the host's ADB server when running inside Docker Desktop.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
